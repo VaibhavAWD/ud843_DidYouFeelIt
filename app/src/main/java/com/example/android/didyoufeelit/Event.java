@@ -15,10 +15,13 @@
  */
 package com.example.android.didyoufeelit;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * {@Event} represents an earthquake event.
  */
-public class Event {
+public class Event implements Parcelable {
 
     /** Title of the earthquake event */
     public final String title;
@@ -41,5 +44,35 @@ public class Event {
         title = eventTitle;
         numOfPeople = eventNumOfPeople;
         perceivedStrength = eventPerceivedStrength;
+    }
+
+    protected Event(Parcel in) {
+        title = in.readString();
+        numOfPeople = in.readString();
+        perceivedStrength = in.readString();
+    }
+
+    public static final Creator<Event> CREATOR = new Creator<Event>() {
+        @Override
+        public Event createFromParcel(Parcel in) {
+            return new Event(in);
+        }
+
+        @Override
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(title);
+        parcel.writeString(numOfPeople);
+        parcel.writeString(perceivedStrength);
     }
 }

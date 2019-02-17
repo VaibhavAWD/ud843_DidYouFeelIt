@@ -14,84 +14,90 @@
      limitations under the License.
 -->
 <!-- Layout for the main screen -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
+    android:fillViewport="true"
     tools:context="com.example.android.didyoufeelit.MainActivity">
 
-    <LinearLayout
-        android:id="@+id/earthquake_container"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:padding="16dp">
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:textAppearance="?android:textAppearanceLarge" />
-
-        <TextView
+        <LinearLayout
+            android:id="@+id/earthquake_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:text="@string/perceived_strength"
-            android:textAllCaps="true"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textAppearance="?android:textAppearanceLarge" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:text="@string/perceived_strength"
+                android:textAllCaps="true"
+                android:textAppearance="?android:textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/perceived_magnitude"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/magnitude_circle"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:textSize="100sp" />
+
+            <TextView
+                android:id="@+id/number_of_people"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="16dp"
+                android:textAllCaps="true"
+                android:textAppearance="?android:textAppearanceMedium" />
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/perceived_magnitude"
+            android:id="@+id/text_empty_state"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/magnitude_circle"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="16dp"
             android:gravity="center"
-            android:textColor="@android:color/white"
-            android:textSize="100sp" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            tools:text="Some error message." />
 
-        <TextView
-            android:id="@+id/number_of_people"
+        <Button
+            android:id="@+id/btn_retry"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:paddingTop="16dp"
-            android:textAllCaps="true"
-            android:textAppearance="?android:textAppearanceMedium" />
+            android:layout_below="@id/text_empty_state"
+            android:layout_centerHorizontal="true"
+            android:text="@string/btn_retry" />
 
-    </LinearLayout>
+        <ProgressBar
+            android:id="@+id/progress_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/text_empty_state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:layout_marginBottom="16dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        tools:text="Some error message." />
+    </RelativeLayout>
 
-    <Button
-        android:id="@+id/btn_retry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/text_empty_state"
-        android:layout_centerHorizontal="true"
-        android:text="@string/btn_retry" />
-
-    <ProgressBar
-        android:id="@+id/progress_indicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:visibility="gone" />
-
-</RelativeLayout>
+</ScrollView>

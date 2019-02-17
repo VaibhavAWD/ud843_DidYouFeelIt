@@ -39,6 +39,10 @@ import android.widget.TextView;
  */
 public class MainActivity extends AppCompatActivity {
 
+    private static final String CURRENT_EARTHQUAKE_EVENT = "CURRENT_EARTHQUAKE_EVENT";
+
+    private Event mEarthquakeEvent;
+
     private LinearLayout mEarthquakeContainer;
     private TextView mEmptyState;
     private Button mRetry;
@@ -54,7 +58,12 @@ public class MainActivity extends AppCompatActivity {
         mRetry = findViewById(R.id.btn_retry);
         mProgressIndicator = findViewById(R.id.progress_indicator);
 
-        fetchEarthquakeData();
+        if (savedInstanceState != null && savedInstanceState.containsKey(CURRENT_EARTHQUAKE_EVENT)) {
+            mEarthquakeEvent = savedInstanceState.getParcelable(CURRENT_EARTHQUAKE_EVENT);
+            updateUi(mEarthquakeEvent);
+        } else {
+            fetchEarthquakeData();
+        }
 
         mRetry.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,7 +120,8 @@ public class MainActivity extends AppCompatActivity {
             hideProgressIndicator();
 
             // Update the information displayed to the user.
-            updateUi(event);
+            mEarthquakeEvent = event;
+            updateUi(mEarthquakeEvent);
         }
     }
 
@@ -209,5 +219,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             return false;
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle currentState) {
+        currentState.putParcelable(CURRENT_EARTHQUAKE_EVENT, mEarthquakeEvent);
+        super.onSaveInstanceState(currentState);
     }
 }
