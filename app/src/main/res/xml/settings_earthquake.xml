@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:defaultValue="@string/pref_default_min_mag"
+        android:inputType="numberDecimal"
+        android:key="@string/pref_key_min_mag"
+        android:title="@string/pref_label_min_mag" />
+
+    <EditTextPreference
+        android:defaultValue="@string/pref_default_min_felt"
+        android:inputType="number"
+        android:key="@string/pref_key_min_felt"
+        android:title="@string/pref_label_min_felt" />
+
+</PreferenceScreen>

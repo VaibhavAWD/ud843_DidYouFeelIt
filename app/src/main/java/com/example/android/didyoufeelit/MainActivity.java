@@ -15,9 +15,16 @@
  */
 package com.example.android.didyoufeelit;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 /**
@@ -26,10 +33,6 @@ import android.widget.TextView;
  */
 public class MainActivity extends AppCompatActivity {
 
-    /** URL for earthquake data from the USGS dataset */
-    private static final String USGS_REQUEST_URL =
-            "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2016-01-01&endtime=2016-05-02&minfelt=50&minmagnitude=5";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,19 +40,41 @@ public class MainActivity extends AppCompatActivity {
 
         // Make network request to fetch the earthquake event data on a background thread
         // using a {@link AsyncTask} and then update the UI on main thread
-        new FetchEarthquakeAsyncTask().execute();
+        new FetchEarthquakeAsyncTask().execute(getEarthquakeUrl());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        final int id = item.getItemId();
+        switch (id) {
+            case R.id.action_settings:
+                startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**
      * {@link AsyncTask} to perform network request on a background thread, and then
      * update the UI with the first earthquake in response.
      */
-    private class FetchEarthquakeAsyncTask extends AsyncTask<Void, Void, Event> {
+    private class FetchEarthquakeAsyncTask extends AsyncTask<String, Void, Event> {
 
         @Override
-        protected Event doInBackground(Void... voids) {
+        protected Event doInBackground(String... urls) {
+            if (urls.length == 0) {
+                return null;
+            }
+
             // Perform the HTTP request for earthquake data and process the response.
-            return Utils.fetchEarthquakeData(USGS_REQUEST_URL);
+            return Utils.fetchEarthquakeData(urls[0]);
         }
 
         @Override
@@ -62,6 +87,34 @@ public class MainActivity extends AppCompatActivity {
             // Update the information displayed to the user.
             updateUi(event);
         }
+    }
+
+    private String getEarthquakeUrl() {
+        final String USGS_BASE_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query?";
+        final String USGS_FORMAT = "format";
+        final String USGS_START_TIME = "starttime";
+        final String USGS_END_TIME = "endtime";
+        final String USGS_MIN_FELT = "minfelt";
+        final String USGS_MIN_MAG = "minmagnitude";
+
+        String format = "geojson";
+        String startDate = "2019-01-01";
+        String endDate = "2019-05-02";
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        String minFelt = pref.getString(
+                getString(R.string.pref_key_min_felt), getString(R.string.pref_default_min_felt));
+        String minMagnitude = pref.getString(
+                getString(R.string.pref_key_min_mag), getString(R.string.pref_default_min_mag));
+
+        Uri.Builder uriBuilder = Uri.parse(USGS_BASE_URL).buildUpon()
+                .appendQueryParameter(USGS_FORMAT, format)
+                .appendQueryParameter(USGS_START_TIME, startDate)
+                .appendQueryParameter(USGS_END_TIME, endDate)
+                .appendQueryParameter(USGS_MIN_FELT, minFelt)
+                .appendQueryParameter(USGS_MIN_MAG, minMagnitude);
+
+        return uriBuilder.toString();
     }
 
     /**

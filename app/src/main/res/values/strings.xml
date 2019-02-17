@@ -22,4 +22,20 @@
 
     <!-- Number of people who reported perceived strength for an earthquake [CHAR LIMIT=NONE] -->
     <string name="num_people_felt_it"><xliff:g id="number" example="10">%s</xliff:g> people felt it</string>
+
+    <!-- Menu option Settings -->
+    <string name="action_settings">Settings</string>
+
+    <!-- Settings Activity Title -->
+    <string name="activity_label_earthquake_settings">Earthquake Settings</string>
+
+    <!-- Minimum Magnitude -->
+    <string name="pref_label_min_mag">Minimum Magnitude</string>
+    <string name="pref_key_min_mag" translatable="false">magnitude</string>
+    <string name="pref_default_min_mag" translatable="false">1.0</string>
+
+    <!-- Minimum People Felt -->
+    <string name="pref_label_min_felt">Minimum people felt</string>
+    <string name="pref_key_min_felt" translatable="false">felt</string>
+    <string name="pref_default_min_felt" translatable="false">50</string>
 </resources>
