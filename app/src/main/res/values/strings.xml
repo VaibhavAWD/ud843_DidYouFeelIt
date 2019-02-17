@@ -38,4 +38,14 @@
     <string name="pref_label_min_felt">Minimum people felt</string>
     <string name="pref_key_min_felt" translatable="false">felt</string>
     <string name="pref_default_min_felt" translatable="false">50</string>
+
+    <!-- Error Message for No internet connectivity -->
+    <string name="error_no_internet_connection">No internet connection.</string>
+
+    <!-- Error Message for No earthquake results -->
+    <string name="error_no_results_found">No earthquake results found.</string>
+
+    <!-- Label for Button retry to show user call to action to try loading data -->
+    <string name="btn_retry">Retry</string>
+
 </resources>

@@ -15,16 +15,22 @@
  */
 package com.example.android.didyoufeelit;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 /**
@@ -33,14 +39,29 @@ import android.widget.TextView;
  */
 public class MainActivity extends AppCompatActivity {
 
+    private LinearLayout mEarthquakeContainer;
+    private TextView mEmptyState;
+    private Button mRetry;
+    private ProgressBar mProgressIndicator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Make network request to fetch the earthquake event data on a background thread
-        // using a {@link AsyncTask} and then update the UI on main thread
-        new FetchEarthquakeAsyncTask().execute(getEarthquakeUrl());
+        mEarthquakeContainer = findViewById(R.id.earthquake_container);
+        mEmptyState = findViewById(R.id.text_empty_state);
+        mRetry = findViewById(R.id.btn_retry);
+        mProgressIndicator = findViewById(R.id.progress_indicator);
+
+        fetchEarthquakeData();
+
+        mRetry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fetchEarthquakeData();
+            }
+        });
     }
 
     @Override
@@ -68,6 +89,14 @@ public class MainActivity extends AppCompatActivity {
     private class FetchEarthquakeAsyncTask extends AsyncTask<String, Void, Event> {
 
         @Override
+        protected void onPreExecute() {
+            showProgressIndicator();
+            hideEarthquakeData("");
+            // hide retry button explicitly
+            mRetry.setVisibility(View.GONE);
+        }
+
+        @Override
         protected Event doInBackground(String... urls) {
             if (urls.length == 0) {
                 return null;
@@ -79,10 +108,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Event event) {
-            // If event data is null then exit early
-            if (event == null) {
-                return;
-            }
+            hideProgressIndicator();
 
             // Update the information displayed to the user.
             updateUi(event);
@@ -121,13 +147,67 @@ public class MainActivity extends AppCompatActivity {
      * Update the UI with the given earthquake information.
      */
     private void updateUi(Event earthquake) {
-        TextView titleTextView = findViewById(R.id.title);
-        titleTextView.setText(earthquake.title);
+        // Handle the empty or null earthquake
+        if (earthquake != null) {
+            TextView titleTextView = findViewById(R.id.title);
+            titleTextView.setText(earthquake.title);
 
-        TextView tsunamiTextView = findViewById(R.id.number_of_people);
-        tsunamiTextView.setText(getString(R.string.num_people_felt_it, earthquake.numOfPeople));
+            TextView tsunamiTextView = findViewById(R.id.number_of_people);
+            tsunamiTextView.setText(getString(R.string.num_people_felt_it, earthquake.numOfPeople));
 
-        TextView magnitudeTextView = findViewById(R.id.perceived_magnitude);
-        magnitudeTextView.setText(earthquake.perceivedStrength);
+            TextView magnitudeTextView = findViewById(R.id.perceived_magnitude);
+            magnitudeTextView.setText(earthquake.perceivedStrength);
+
+            showEarthquakeData();
+        } else {
+            hideEarthquakeData(getString(R.string.error_no_results_found));
+        }
+    }
+
+    private void fetchEarthquakeData() {
+        if (hasConnection()) {
+            // Make network request to fetch the earthquake event data on a background thread
+            // using a {@link AsyncTask} and then update the UI on main thread
+            new FetchEarthquakeAsyncTask().execute(getEarthquakeUrl());
+        } else {
+            hideEarthquakeData(getString(R.string.error_no_internet_connection));
+        }
+    }
+
+    private void showProgressIndicator() {
+        mProgressIndicator.setVisibility(View.VISIBLE);
+    }
+
+    private void hideProgressIndicator() {
+        mProgressIndicator.setVisibility(View.GONE);
+    }
+
+    private void showEarthquakeData() {
+        mEarthquakeContainer.setVisibility(View.VISIBLE);
+        mEmptyState.setVisibility(View.GONE);
+        mRetry.setVisibility(View.GONE);
+    }
+
+    private void hideEarthquakeData(String message) {
+        mEarthquakeContainer.setVisibility(View.GONE);
+
+        mEmptyState.setVisibility(View.VISIBLE);
+        mEmptyState.setText(message);
+
+        mRetry.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Checks network connectivity.
+     */
+    private boolean hasConnection() {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            return networkInfo != null && networkInfo.isConnected();
+        } else {
+            return false;
+        }
     }
 }
